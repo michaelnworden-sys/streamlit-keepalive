@@ -1,0 +1,18 @@
+name: Keep Streamlit App Alive
+
+on:
+  schedule:
+    # Run every 6 hours
+    - cron: '0 */6 * * *'
+  workflow_dispatch:
+
+jobs:
+  keep-alive:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Ping Streamlit App
+      run: |
+        echo "Pinging Streamlit app at $(date)"
+        curl -f -s -I https://wsf-chat.streamlit.app/
+        echo "✅ Keep-alive ping completed successfully"
