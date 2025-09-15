@@ -2,7 +2,7 @@ name: Keep Streamlit App Alive
 
 on:
   schedule:
-    # Run every 4 hours instead of 6 (more frequent)
+    # Run every 4 hours
     - cron: '0 */4 * * *'
   workflow_dispatch:
 
@@ -11,39 +11,13 @@ jobs:
     runs-on: ubuntu-latest
     
     steps:
-    - name: Advanced Streamlit Keep-Alive
+    - name: Ping Streamlit App
       run: |
-        echo "🚀 Starting advanced keep-alive sequence at $(date)"
+        echo "🚀 Pinging Streamlit app at $(date)"
         
-        # Method 1: Simulate a real browser visit
-        echo "📱 Simulating browser visit..."
-        curl -L -s \
+        # Simple ping - don't fail if app is sleeping
+        curl -L -s -m 30 --retry 3 --retry-delay 10 \
           -H "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36" \
-          -H "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8" \
-          -H "Accept-Language: en-US,en;q=0.5" \
-          -H "Accept-Encoding: gzip, deflate" \
-          -H "Connection: keep-alive" \
-          -H "Upgrade-Insecure-Requests: 1" \
-          https://wsf-chat.streamlit.app/ > /dev/null
+          https://wsf-chat.streamlit.app/ || echo "Ping attempt completed (app may have been sleeping)"
         
-        sleep 5
-        
-        # Method 2: Try to trigger Streamlit's session
-        echo "🔄 Attempting to interact with Streamlit session..."
-        curl -L -s \
-          -H "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36" \
-          https://wsf-chat.streamlit.app/_stcore/health > /dev/null
-        
-        sleep 3
-        
-        # Method 3: Multiple rapid requests to simulate user interaction
-        echo "⚡ Simulating user interaction..."
-        for i in {1..3}; do
-          curl -L -s \
-            -H "User-Agent: Mozilla/5.0 (iPhone; CPU iPhone OS 14_7_1 like Mac OS X)" \
-            https://wsf-chat.streamlit.app/ > /dev/null
-          sleep 2
-        done
-        
-        echo "✅ Advanced keep-alive completed successfully at $(date)"
-        echo "📊 Next ping scheduled in 4 hours"
+        echo "✅ Keep-alive sequence finished at $(date)"
