@@ -1,23 +1,19 @@
-name: Keep Streamlit App Alive
+yamlCopyname: Keep Streamlit App Alive
 
 on:
   schedule:
-    # Run every 4 hours
+    # Run every 4 hours (more reasonable than 30 minutes)
     - cron: '0 */4 * * *'
+  # Allows manual trigger from GitHub web interface
   workflow_dispatch:
 
 jobs:
-  keep-alive:
+  ping_streamlit:
     runs-on: ubuntu-latest
-    
+
     steps:
-    - name: Ping Streamlit App
-      run: |
-        echo "🚀 Pinging Streamlit app at $(date)"
-        
-        # Simple ping - don't fail if app is sleeping
-        curl -L -s -m 30 --retry 3 --retry-delay 10 \
-          -H "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36" \
-          https://wsf-chat.streamlit.app/ || echo "Ping attempt completed (app may have been sleeping)"
-        
-        echo "✅ Keep-alive sequence finished at $(date)"
+      - name: Ping Streamlit App
+        run: |
+          echo "Pinging Streamlit app at $(date)"
+          curl -IsS "https://wsf-chat.streamlit.app/" -o /dev/null
+          echo "Ping completed successfully"
